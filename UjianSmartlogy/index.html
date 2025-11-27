@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CellBeauty - Toko Kecantikan Korea (Mode Lokal)</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'shopee-primary': '#ee4d2d',
+                        'korean-accent': '#f472b6',
+                        'korean-bg': '#fff7f7',
+                        'korean-text': '#1f2937',
+                        'korean-soft': '#fbcfe8',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        let cart = [];
+        let currentCategory = 'Semua';
+
+
+        const SHIPPING_FEE = 20000;
+        const FREE_SHIPPING_THRESHOLD = 500000;
+        const WA_PHONE_NUMBER = "6281335725989";
+
+        const productsData = [
+            { id: 1, name: 'Toner Wajah Wardah', category: 'Skincare', price: 29376, image: 'https://i.pinimg.com/1200x/b3/57/4b/b3574b067ca1c45db32f19bc4466fccb.jpg', description: 'Melembabkan kulit secara intensif dengan 5 jenis Hyaluronic Acid.' },
+            { id: 2, name: 'Serum Anti-Aging Ginseng', category: 'Skincare', price: 19775, image: 'https://i.pinimg.com/1200x/1a/d6/a0/1ad6a0d33f23ccb980ca473797b62ba8.jpg', description: 'Meningkatkan elastisitas dan mengurangi garis halus.' },
+            { id: 3, name: 'Cleansing Balm Skintific', category: 'Skincare', price: 82720, image: 'https://i.pinimg.com/1200x/30/ea/8f/30ea8f295012ad666536191b85296399.jpg', description: 'Membersihkan make up dan kotoran tanpa membuat kulit kering.' },
+            { id: 4, name: 'Pelembab Ceramide Wajah', category: 'Skincare', price: 55360, image: 'https://i.pinimg.com/736x/c7/82/61/c782612343a3022eba2ba65a0992a8dc.jpg', description: 'Memperkuat skin barrier dan mengunci kelembaban.' },
+            { id: 5, name: 'Masker Lumpur Jeju Volcanic', category: 'Skincare', price: 150000, image: 'https://i.pinimg.com/736x/8f/f6/40/8ff640df439956057114051a160c76a6.jpg', description: 'Mengangkat komedo dan membersihkan pori-pori secara mendalam.' },
+            { id: 6, name: 'Sunscreen UV Shield SPF 50+', category: 'Skincare', price: 32767, image: 'https://i.pinimg.com/1200x/f2/b9/99/f2b99907f8ae21dde1e0b9f970af2e4a.jpg', description: 'Perlindungan maksimal dari sinar UVA/UVB tanpa whitecast.' },
+            { id: 20, name: 'Essence Galactomyces mixsoon', category: 'Skincare', price: 239927, image: 'https://i.pinimg.com/736x/23/12/90/2312906cc8344d14a359eb5fc595ceff.jpg', description: 'Mencerahkan dan menghaluskan tekstur kulit.' },
+            { id: 21, name: 'Acne Patch', category: 'Skincare', price: 32900, image: 'https://i.pinimg.com/1200x/11/80/86/118086e16c10026dc2e965bd782a51a9.jpg', description: 'Menyerap cairan jerawat dan mempercepat penyembuhan.' },
+            { id: 22, name: 'Eye Cream Peptide-Tox', category: 'Skincare', price: 25473, image: 'https://i.pinimg.com/1200x/34/d7/90/34d7909bf70378619a8aa501a62f8075.jpg', description: 'Mengurangi tampilan lingkaran hitam dan kerutan mata.' },
+            { id: 23, name: 'Facial Wash Low pH Scora', category: 'Skincare', price: 27250, image: 'https://i.pinimg.com/1200x/a9/cd/6b/a9cd6b8dcc44c26b6db94242b480c8ff.jpg', description: 'Pembersih wajah lembut tanpa merusak pH alami kulit.' },
+            { id: 24, name: 'Ampoule Serum ', category: 'Skincare', price: 131912, image: 'https://i.pinimg.com/736x/23/62/62/2362620caeb9722805c08c993ad185db.jpg', description: 'Menghidrasi intensif dan menenangkan kulit sensitif.' },
+            { id: 25, name: 'Retinol Skintific', category: 'Skincare', price: 117920, image: 'https://i.pinimg.com/1200x/96/9f/62/969f62b94c52d94737fd50746e93cb7c.jpg', description: 'Meremajakan kulit dan memperbaiki tekstur saat tidur.' },
+
+
+            { id: 7, name: 'Cushion MakeOver', category: 'Makeup', price: 123323, image: 'https://i.pinimg.com/736x/4c/ab/69/4cab690e0c15a160723f2c443d2f6b54.jpg', description: 'Foundation ringan dengan hasil akhir dewy yang tahan lama.' },
+            { id: 8, name: 'Lip Tint Hanasui Next Level', category: 'Makeup', price: 30593, image: 'https://i.pinimg.com/736x/50/6d/08/506d086f9a5dbfd02848c8fe8230f6ba.jpg', description: 'Tekstur velvet yang lembut dengan warna peach yang cerah.' },
+            { id: 9, name: 'Eyeshadow Salsa', category: 'Makeup', price: 27781, image: 'https://i.pinimg.com/1200x/54/33/07/543307cdeffb8f07a95d85403848a558.jpg', description: 'Kombinasi matte dan shimmer untuk berbagai tampilan mata.' },
+            { id: 10, name: 'Eyebrow Pencil Implora', category: 'Makeup', price: 10913, image: 'https://i.pinimg.com/736x/66/8f/b6/668fb6b39b70c711ddbb4302618ae93d.jpg', description: 'Pensil alis presisi dengan spoolie brush yang menyatu.' },
+            { id: 11, name: 'Blush On Liquid Sea Makeup', category: 'Makeup', price: 61100, image: 'https://i.pinimg.com/1200x/7d/18/70/7d187067588164678f9ab6e8d555a9e5.jpg', description: 'Cream blush yang mudah dibaurkan memberikan rona alami.' },
+            { id: 26, name: 'Setting Spray Skintific', category: 'Makeup', price: 50198, image: 'https://i.pinimg.com/736x/03/8b/8d/038b8d9d4feb38bf3eda26be5a95ffc6.jpg', description: 'Mengunci makeup dan memberikan efek dewy glow.' },
+            { id: 27, name: 'Foundation Sea Makeup', category: 'Makeup', price: 35719, image: 'https://i.pinimg.com/736x/77/e3/8c/77e38cedf40a0e7c8ff03a11319f1349.jpg', description: 'Foundation tahan lama untuk tampilan matte yang sempurna.' },
+            { id: 28, name: 'Concealer Skintific', category: 'Makeup', price: 55469, image: 'https://i.pinimg.com/1200x/d0/b6/ee/d0b6ee8ac4fac87e34a659df2c662adf.jpg', description: 'Menutup noda dan lingkaran hitam dengan sempurna.' },
+            { id: 29, name: 'Maskara Dazzle Me', category: 'Makeup', price: 34686, image: 'https://i.pinimg.com/736x/82/a1/aa/82a1aa56ad98bce5fe04872e413e8033.jpg', description: 'Membuat bulu mata tebal dan lentik, tahan air.' },
+            { id: 30, name: 'Highlighter Rare Beauty', category: 'Makeup', price: 171600, image: 'https://i.pinimg.com/736x/09/ec/60/09ec60acfef88f54e67762f5a2089d26.jpg', description: 'Memberikan kilau alami pada tulang pipi.' },
+            { id: 31, name: 'Loose Powder Azzura', category: 'Makeup', price: 26800, image: 'https://i.pinimg.com/1200x/ff/02/20/ff0220dd93f6a433033a69c4cf4c127a.jpg', description: 'Bedak tabur ringan untuk mengunci makeup.' },
+            { id: 32, name: 'Lipstick Matte Hanasui', category: 'Makeup', price: 28701, image: 'https://i.pinimg.com/1200x/4e/c2/a3/4ec2a3d55f2215853e4b8236ac4b55f9.jpg', description: 'Lipstick matte intens dengan warna merah yang berani.' },
+
+
+            { id: 12, name: 'Body Wash Dove', category: 'Bodycare', price: 69816, image: 'https://i.pinimg.com/1200x/5f/19/43/5f1943ff3571046eb8aa670bf1789ec1.jpg', description: 'Sabun mandi yang membersihkan dan menjaga kelembaban kulit tubuh.' },
+            { id: 13, name: 'WHITE INC Alpha Glow White Body Lotion Whitening 400Ml | whiteinc pencerah kulit', category: 'Bodycare', price: 46530, image: 'https://i.pinimg.com/1200x/2c/78/04/2c7804e105da3c346583e78de15b9de6.jpg', description: 'Body lotion dengan Niacinamide untuk kulit tubuh yang lebih cerah.' },
+            { id: 14, name: 'Flower Fresh Fruit Hand', category: 'Bodycare', price: 21014, image: 'https://i.pinimg.com/1200x/b0/4c/de/b04cdeeb2e3e6f82e4963601eb4d07e3.jpg', description: 'Krim tangan yang tidak lengket dengan aroma lavender yang menenangkan.' },
+            { id: 15, name: 'Body Scrub Hanasui', category: 'Bodycare', price: 20086, image: 'https://i.pinimg.com/1200x/2f/38/7a/2f387a820d73358474f0f45211e993ba.jpg', description: 'Mengangkat sel kulit mati, membuat kulit terasa lebih halus dan lembut.' },
+            { id: 33, name: 'Deodoran Roll-On Nivea', category: 'Bodycare', price: 20266, image: 'https://i.pinimg.com/736x/7c/50/b0/7c50b0878f96bb5f64b54fecfc692925.jpg', description: 'Mengontrol bau badan seharian dengan kandungan Charcoal.' },
+            { id: 34, name: 'Foot Cream Cerave', category: 'Bodycare', price: 244000, image: 'https://i.pinimg.com/736x/ba/47/a9/ba47a9a39430a3b6e4c970465f91046a.jpg', description: 'Krim kaki untuk mengatasi tumit pecah-pecah dan melembabkan.' },
+            { id: 35, name: 'Body Oil Vaseline', category: 'Bodycare', price: 125136, image: 'https://i.pinimg.com/1200x/e9/72/38/e97238c50a8e7e1ad93d5c8c23bbf255.jpg', description: 'Minyak tubuh yang mewah dengan kelopak bunga asli di dalamnya.' },
+            { id: 36, name: 'Purbasari Lulur Mandi', category: 'Bodycare', price: 22257, image: 'https://i.pinimg.com/736x/17/ff/0a/17ff0a9c36f9e8f22ee5670050616316.jpg', description: 'Sabun dengan butiran scrub halus untuk eksfoliasi harian.' },
+            { id: 37, name: 'Parfum Scarlett', category: 'Bodycare', price: 55632, image: 'https://i.pinimg.com/1200x/22/8d/82/228d8257c40db93cab9d81c1dd3be4e4.jpg', description: 'Body mist dengan aroma khas musim semi Korea.' },
+            { id: 38, name: 'Grace And Glow Lotion SPF', category: 'Bodycare', price: 29140, image: 'https://i.pinimg.com/736x/32/34/75/323475cd0d60099155813441ee161566.jpg', description: 'Tabir surya khusus tubuh, ringan, dan tidak lengket.' },
+            { id: 39, name: 'Body Bleaching Jejuby', category: 'Bodycare', price: 51605, image: 'https://i.pinimg.com/1200x/b5/9f/eb/b59febff0393d61dca956cf664269ed8.jpg', description: 'Masker perawatan area sensitif untuk kekencangan.' },
+            { id: 40, name: 'Body Serum Vaseline', category: 'Bodycare', price: 43458, image: 'https://i.pinimg.com/736x/e7/ab/c2/e7abc2a7984195f7208abda1ce2d5995.jpg', description: 'Body butter tebal untuk kulit sangat kering dan pecah-pecah.' },
+
+
+            { id: 16, name: 'Shampo Johnshons non sls', category: 'Haircare', price: 24937, image: 'https://i.pinimg.com/736x/a1/19/d6/a119d69ec7a19b4720f187d9e6e55393.jpg', description: 'Formula biji kedelai hitam untuk mengurangi kerontokan rambut.' },
+            { id: 17, name: 'Conditioner Makarizo', category: 'Haircare', price: 23700, image: 'https://i.pinimg.com/1200x/fc/c9/4b/fcc94b0cd0542c7a857dcd751eba0ca1.jpg', description: 'Melembutkan dan menambah kilau rambut tanpa membuatnya lepek.' },
+            { id: 18, name: 'Hair Mask Makarizo', category: 'Haircare', price: 16800, image: 'https://i.pinimg.com/1200x/51/21/8d/51218de1f0c0ee565c3fc99933707f6d.jpg', description: 'Perawatan mingguan intensif untuk rambut yang rusak.' },
+            { id: 19, name: 'Serum Rambut Loreal', category: 'Haircare', price: 93570, image: 'https://i.pinimg.com/1200x/ac/fc/47/acfc472833b56d242b2b100e99868206.jpg', description: 'Melindungi rambut dari panas alat styling dan memberikan keharuman.' },
+            { id: 41, name: 'Hair Tonic Rambut makarizo', category: 'Haircare', price: 31600, image: 'https://i.pinimg.com/1200x/55/60/a6/5560a6e83c12cb563f3330977e4be2e3.jpg', description: 'Merangsang pertumbuhan rambut dan menguatkan akar.' },
+            { id: 42, name: 'Hair Spray Loreal', category: 'Haircare', price: 183880, image: 'https://i.pinimg.com/1200x/18/1d/ff/181dff5867c5c479a0f9534571877d68.jpg', description: 'Menyerap minyak dan menyegarkan rambut tanpa air.' },
+            { id: 43, name: 'Shampo Anti-Ketombe Makarizo', category: 'Haircare', price: 23600, image: 'https://i.pinimg.com/1200x/97/4c/d0/974cd08d81ac586ec23e705ce61a9ad8.jpg', description: 'Membantu mengatasi masalah kutu dan ketombe.' },
+            { id: 44, name: 'Hair Essence Orbis', category: 'Haircare', price: 192000, image: 'https://i.pinimg.com/1200x/71/e4/4f/71e44ff15b8ca16fc5411bcf5f5f5948.jpg', description: 'Memberi nutrisi instan pada rambut kering.' },
+            { id: 45, name: 'Pewarna Rambut Garnier', category: 'Haircare', price: 17795, image: 'https://i.pinimg.com/736x/4a/d6/85/4ad685fea009afe3a75b3af7e334835c.jpg', description: 'Pewarna rambut format busa yang mudah digunakan.' },
+            { id: 46, name: 'Pewarna Rambut Makarizo', category: 'Haircare', price: 23134, image: 'https://i.pinimg.com/1200x/29/93/3c/29933c61b970e967e5d0c5b552db742a.jpg', description: 'Minyak kelapa alami untuk kelembaban ekstra.' },
+            { id: 47, name: 'Sisir Detangling Khusus', category: 'Haircare', price: 14428, image: 'https://i.pinimg.com/736x/cb/9e/ad/cb9eadb1a60230572afc3bd823b55743.jpg', description: 'Sisir yang dirancang khusus untuk mengurangi kerontokan saat menyisir.' },
+            { id: 48, name: 'Catokan Dyson', category: 'Haircare', price: 8750000, image: 'https://i.pinimg.com/1200x/41/bc/74/41bc74ae164daa15a040b63fca999783.jpg', description: 'Hair spray dengan daya tahan kuat sepanjang hari.' },
+        ];
+
+
+        function formatRupiah(number) {
+            if (number === undefined || number === null) return 'Rp 0';
+            const num = Number(number);
+            if (isNaN(num)) return 'Rp 0';
+
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(num);
+        }
+
+        window.showMessage = function (message, bgColor) {
+
+            const toast = document.getElementById('toast-message');
+            toast.innerHTML = `<div class="flex items-center space-x-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>${message}</span></div>`;
+            toast.className = `fixed bottom-5 right-5 z-50 p-4 rounded-lg text-white font-medium shadow-xl transition-all duration-300 ${bgColor}`;
+            toast.classList.remove('opacity-0', 'scale-90', 'hidden');
+            toast.classList.add('opacity-100', 'scale-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'scale-100');
+                toast.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        window.generateWhatsAppUrl = function (subtotal, shippingFee, grandTotal, name, address, payment) {
+
+            const phoneNumber = WA_PHONE_NUMBER;
+            const orderCode = `ORD-${Date.now().toString().slice(-6)}`; // Simple unique code for WA chat
+
+            let message = `*🧾 DETAIL PESANAN BARU*\n\n`;
+            message += `*Kode Order Unik:* ${orderCode}\n`;
+            message += `*Nama Customer:* ${name || '[Nama belum diisi]'}\n`;
+            message += `*Alamat Pengiriman:* ${address || '[Alamat belum diisi]'}\n`;
+            message += `*Pembayaran via:* ${payment || '[Metode Pembayaran belum dipilih]'}\n\n`;
+
+            message += `--- *🛍️ RINCIAN PRODUK* ---\n`;
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                message += `${index + 1}. *${item.name}* (Qty: ${item.quantity}) = ${formatRupiah(itemTotal).replace('Rp', 'Rp ')}\n`;
+            });
+
+            message += `\n`;
+            message += `--- *💰 TOTAL TAGIHAN* ---\n`;
+            message += `Subtotal Produk: ${formatRupiah(subtotal).replace('Rp', 'Rp ')}\n`;
+            message += `Ongkos Kirim: ${shippingFee === 0 ? 'GRATIS' : formatRupiah(shippingFee).replace('Rp', 'Rp ')}\n`;
+            message += `TOTAL AKHIR: *${formatRupiah(grandTotal).replace('Rp', 'Rp ')}*\n`;
+            message += `------------------------\n`;
+
+            message += "\n*Mohon konfirmasi pesanan ini. Terima kasih!*";
+
+            return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        }
+
+        // --- RENDERING & UI LOGIC ---
+        function renderApp() {
+            showPage('landing');
+        }
+
+        // FUNGSI KUNCI YANG DIPERBAIKI
+        window.showPage = function showPage(pageId) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+
+
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('text-korean-accent', 'border-korean-accent');
+                el.classList.add('text-gray-500', 'hover:text-korean-accent', 'border-transparent');
+            });
+
+
+            if (pageId === 'landing') {
+                document.getElementById('landing-page')?.classList.remove('hidden');
+                document.getElementById('nav-landing')?.classList.add('text-korean-accent', 'border-korean-accent');
+            } else if (pageId === 'product-list') {
+                document.getElementById('product-list-page')?.classList.remove('hidden');
+                document.getElementById('nav-products')?.classList.add('text-korean-accent', 'border-korean-accent');
+            } else if (pageId === 'order-history') {
+                document.getElementById('order-history-page')?.classList.remove('hidden');
+                document.getElementById('nav-history')?.classList.add('text-korean-accent', 'border-korean-accent');
+                renderOrders(); // Panggil fungsi render riwayat pesanan (Local Storage)
+            }
+        }
+
+        window.showProductsPage = function (category) {
+            showPage('product-list');
+            renderProducts(category);
+        }
+
+        window.renderProducts = function (category) {
+            currentCategory = category;
+            const productGrid = document.getElementById('product-grid');
+            productGrid.innerHTML = '';
+
+            const filteredProducts = currentCategory === 'Semua'
+                ? productsData
+                : productsData.filter(p => p.category === currentCategory);
+
+            document.getElementById('product-title').textContent = currentCategory === 'Semua'
+                ? 'Semua Produk'
+                : `${currentCategory}`;
+            document.getElementById('product-subtitle').textContent = currentCategory === 'Semua'
+                ? `Total ${productsData.length} Item Kecantikan Korea Terbaik`
+                : `Daftar ${filteredProducts.length} Item Kategori ${currentCategory}`;
+
+            // Logika penandaan tab aktif
+            document.querySelectorAll('.category-tab').forEach(el => {
+                el.classList.remove('active', 'bg-korean-accent', 'text-white', 'shadow-lg');
+                el.classList.add('bg-white', 'text-gray-600', 'hover:bg-korean-soft');
+            });
+            const activeTab = document.getElementById(`filter-${category.toLowerCase().replace(/\s/g, '-')}`);
+            if (activeTab) {
+                activeTab.classList.add('active', 'bg-korean-accent', 'text-white', 'shadow-lg');
+                activeTab.classList.remove('bg-white', 'text-gray-600', 'hover:bg-korean-soft');
+            }
+
+            if (filteredProducts.length === 0) {
+                productGrid.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Tidak ada produk dalam kategori ini.</p>';
+                return;
+            }
+
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'bg-white shadow-md rounded-lg overflow-hidden transition transform hover:translate-y-[-2px] hover:shadow-xl duration-300 border border-gray-100';
+                card.innerHTML = `
+                    <div class="h-48 overflow-hidden flex items-center justify-center bg-gray-50"> 
+                        <img src="${product.image}" alt="${product.name}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-500" onerror="this.onerror=null;this.src='https://placehold.co/400x300/fecaca/9f1239?text=Gambar+Hilang'">
+                    </div>
+                    <div class="p-4">
+                        <p class="text-xs text-shopee-primary font-semibold mb-1 uppercase">${product.category}</p>
+                        <h3 class="text-lg font-bold text-korean-text h-12 overflow-hidden mb-2">${product.name}</h3>
+                        <p class="text-sm text-gray-500 mb-3 h-10 overflow-hidden">${product.description}</p>
+                        <div class="flex items-end justify-between">
+                            <p class="text-xl font-bold text-shopee-primary">${formatRupiah(product.price)}</p>
+                            <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})" 
+                                class="flex items-center space-x-1 bg-korean-accent text-white font-medium py-2 px-3 text-sm rounded-lg hover:bg-pink-600 transition duration-200 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span>Beli</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+
+        window.addToCart = function (id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1, subtotal: price });
+            }
+            // Update subtotal item di keranjang
+            const item = cart.find(item => item.id === id);
+            if (item) item.subtotal = item.price * item.quantity;
+
+            updateCartCount();
+            renderCartModal();
+            showMessage('Produk ditambahkan ke keranjang!', 'bg-green-500');
+        }
+
+        window.updateCartQuantity = function (index, change) {
+            const item = cart[index];
+            item.quantity += change;
+
+            if (item.quantity <= 0) {
+                cart.splice(index, 1);
+                showMessage('Produk dihapus dari keranjang.', 'bg-red-500');
+            } else {
+                item.subtotal = item.price * item.quantity; // Update subtotal item
+                showMessage('Jumlah keranjang diperbarui.', 'bg-blue-500');
+            }
+            updateCartCount();
+            renderCartModal();
+        }
+
+
+        window.toggleCartModal = function (show) {
+            const modal = document.getElementById('cart-modal');
+            const cartPanel = document.getElementById('cart-panel');
+            if (show) {
+                renderCartModal();
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('opacity-100');
+                    cartPanel.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                cartPanel.classList.add('translate-x-full');
+                modal.classList.remove('opacity-100');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        window.renderCartModal = function () {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="text-center py-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <p class="text-gray-500 mt-3">Keranjang Anda masih kosong. Yuk, belanja sekarang!</p>
+                    </div>
+                `;
+            } else {
+                cart.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex justify-between items-center py-3 border-b last:border-b-0';
+                    itemElement.innerHTML = `
+                        <div class="flex-1 mr-4">
+                            <p class="font-semibold text-korean-text">${item.name}</p>
+                            <p class="text-xs text-gray-500">${formatRupiah(item.price)}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateCartQuantity(${index}, -1)" class="text-gray-500 hover:text-shopee-primary transition duration-150 p-1 rounded-full bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                </svg>
+                            </button>
+                            <span class="font-bold text-sm w-4 text-center">${item.quantity}</span>
+                            <button onclick="updateCartQuantity(${index}, 1)" class="text-gray-500 hover:text-shopee-primary transition duration-150 p-1 rounded-full bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                });
+            }
+
+            cartTotalElement.textContent = formatRupiah(total);
+        }
+
+
+
+        window.renderOrders = function () {
+            const historyContainer = document.getElementById('order-history-container');
+
+
+            const savedOrders = localStorage.getItem('beautykorean_orders');
+            let orders = savedOrders ? JSON.parse(savedOrders) : [];
+
+
+            orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (orders.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="text-center py-10 bg-white rounded-xl shadow-lg mt-5">
+                        <p class="text-gray-500">Anda belum memiliki riwayat pesanan yang tersimpan di browser ini.</p>
+                        <button onclick="showProductsPage('Semua')" class="mt-4 bg-korean-accent text-white font-medium py-2 px-4 rounded-lg hover:bg-pink-600 transition duration-200">
+                            Mulai Belanja Sekarang
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            historyContainer.innerHTML = orders.map(order => {
+                const formattedDate = new Date(order.timestamp).toLocaleString('id-ID', {
+                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                const itemsList = order.items.map(item =>
+                    `<li class="text-sm text-gray-600 truncate">${item.name} (x${item.quantity}) - ${formatRupiah(item.subtotal)}</li>`
+                ).join('');
+
+                return `
+                    <div class="bg-white p-5 rounded-xl shadow-lg mb-6 border-t-4 border-shopee-primary">
+                        <div>
+                            <div>
+                                <p class="text-sm font-semibold text-shopee-primary">ID Pesanan: ${order.id}</p>
+                                <p class="text-xs text-gray-500">Tanggal: ${formattedDate}</p>
+                            </div>
+                            <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">${order.status || 'Menunggu Konfirmasi'}</span>
+                        </div>
+
+                        <p class="font-bold text-korean-text mb-2">Detail Item (${order.items.length} jenis):</p>
+                        <ul class="list-disc list-inside space-y-1 mb-4 pl-2 max-h-24 overflow-y-auto">
+                            ${itemsList}
+                        </ul>
+
+                        <div class="space-y-1 pt-3 border-t">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Subtotal Produk:</span>
+                                <span class="font-medium">${formatRupiah(order.subtotal)}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Ongkos Kirim:</span>
+                                <span class="${order.shippingFee === 0 ? 'text-green-600 font-bold' : 'font-medium'}">
+                                    ${order.shippingFee === 0 ? 'GRATIS' : formatRupiah(order.shippingFee)}
+                                </span>
+                            </div>
+                            <div class="flex justify-between text-lg font-bold text-korean-accent pt-2">
+                                <span>Total Tagihan:</span>
+                                <span>${formatRupiah(order.total)}</span>
+                            </div>
+                            <p class="text-xs text-right text-gray-500">Pembayaran via: ${order.customer.payment}</p>
+                            <p class="text-sm text-gray-700 pt-2"><span class="font-semibold">Nama:</span> ${order.customer.name}</p>
+                            <p class="text-sm text-gray-700"><span class="font-semibold">Alamat:</span> ${order.customer.address}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+
+
+        window.openCheckoutModal = function () {
+            if (cart.length === 0) {
+                showMessage('Keranjang belanja kosong. Silakan tambahkan produk!', 'bg-yellow-500');
+                return;
+            }
+            toggleCartModal(false);
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+
+            let shippingFee = SHIPPING_FEE;
+            let freeShippingNoteText = '';
+            let shippingColor = 'text-gray-700';
+
+            if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+                shippingFee = 0; // Gratis Ongkir
+                freeShippingNoteText = 'Selamat! Anda mendapatkan **Gratis Ongkir**!';
+                shippingColor = 'text-green-600 font-bold';
+            } else {
+                const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+                freeShippingNoteText = `Tambah ${formatRupiah(remaining)} lagi untuk Gratis Ongkir!`;
+            }
+
+
+            const grandTotal = subtotal + shippingFee;
+
+
+            document.getElementById('summary-subtotal').textContent = formatRupiah(subtotal);
+            document.getElementById('summary-shipping-fee').textContent = shippingFee === 0 ? 'GRATIS' : formatRupiah(shippingFee);
+            document.getElementById('summary-shipping-fee').className = `font-medium ${shippingColor}`;
+            document.getElementById('summary-grand-total').textContent = formatRupiah(grandTotal);
+
+
+            const freeShippingNote = document.getElementById('free-shipping-note');
+            freeShippingNote.classList.remove('text-green-600', 'text-yellow-600', 'hidden');
+
+            if (shippingFee === 0) {
+                freeShippingNote.classList.add('text-green-600', 'font-bold');
+                freeShippingNote.textContent = freeShippingNoteText;
+            } else {
+                freeShippingNote.classList.add('text-yellow-600');
+                freeShippingNote.textContent = freeShippingNoteText;
+            }
+
+
+            const summaryItems = document.getElementById('checkout-summary-items');
+            summaryItems.innerHTML = cart.map(item => `
+                <div class="flex justify-between text-sm py-1 border-b last:border-b-0">
+                    <span class="text-gray-600">${item.name} (x${item.quantity})</span>
+                    <span class="font-medium">${formatRupiah(item.subtotal)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        window.closeCheckoutModal = function () {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        window.submitOrder = function () {
+            const name = document.getElementById('checkout-name').value.trim();
+            const address = document.getElementById('checkout-address').value.trim();
+            const payment = document.querySelector('input[name="payment-method"]:checked')?.value;
+
+            if (!name || !address || !payment) {
+                showMessage('Harap lengkapi Nama, Alamat, dan Metode Pembayaran!', 'bg-red-500');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+            const grandTotal = subtotal + shippingFee;
+
+            try {
+                const orderData = {
+                    id: `ORD-${Date.now().toString().slice(-6)}`,
+                    customer: { name, address, payment },
+                    items: cart,
+                    subtotal: subtotal,
+                    shippingFee: shippingFee,
+                    total: grandTotal,
+                    status: 'Menunggu Konfirmasi',
+                    timestamp: new Date().toISOString()
+                };
+
+                const savedOrders = localStorage.getItem('beautykorean_orders');
+                const orders = savedOrders ? JSON.parse(savedOrders) : [];
+                orders.push(orderData);
+                localStorage.setItem('beautykorean_orders', JSON.stringify(orders));
+                console.log("Order saved to Local Storage.");
+
+            } catch (e) {
+                console.error("Error saving document to Local Storage: ", e);
+                showMessage('Gagal menyimpan riwayat pesanan ke Local Storage.', 'bg-red-500');
+            }
+
+
+
+            const waUrl = generateWhatsAppUrl(subtotal, shippingFee, grandTotal, name, address, payment);
+
+
+            cart = [];
+            updateCartCount();
+            closeCheckoutModal();
+            showMessage('Pesanan berhasil dibuat! Arahkan ke WhatsApp...', 'bg-green-600');
+
+
+            setTimeout(() => {
+                window.open(waUrl, '_blank');
+            }, 1000);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', renderApp);
+    </script>
+</head>
+
+<body class="bg-korean-bg font-sans min-h-screen flex flex-col">
+
+    <div id="toast-message"
+        class="fixed bottom-5 right-5 z-50 p-4 rounded-lg text-white font-medium shadow-xl opacity-0 scale-90 transition-all duration-300 hidden">
+    </div>
+
+    <header class="bg-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-extrabold text-korean-accent tracking-tighter">CellBeauty</h1>
+                </div>
+
+                <nav class="hidden md:flex space-x-4 h-full">
+                    <a id="nav-landing" href="#" onclick="showPage('landing')"
+                        class="nav-link flex items-center px-3 border-b-2 text-korean-accent border-korean-accent font-semibold transition duration-200">Beranda</a>
+                    <a id="nav-products" href="#" onclick="showProductsPage('Semua')"
+                        class="nav-link flex items-center px-3 border-b-2 text-gray-500 hover:text-korean-accent border-transparent font-semibold transition duration-200">Produk</a>
+                    <a id="nav-history" href="#" onclick="showPage('order-history')"
+                        class="nav-link flex items-center px-3 border-b-2 text-gray-500 hover:text-korean-accent border-transparent font-semibold transition duration-200">Riwayat
+                        Pesanan</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div id="user-id-display" class="text-xs text-gray-400">Mode Lokal</div>
+
+                    <button onclick="toggleCartModal(true)"
+                        class="relative p-2 rounded-full text-korean-text hover:text-shopee-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-korean-accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span id="cart-count"
+                            class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-shopee-primary rounded-full">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <section id="landing-page" class="hidden">
+            <div class="bg-white rounded-xl shadow-2xl p-8 lg:p-12 mb-10 border-t-4 border-korean-accent">
+                <div class="lg:flex lg:items-center">
+                    <div class="lg:w-1/2">
+                        <h2 class="text-4xl lg:text-5xl font-extrabold text-korean-text mb-4 leading-tight">
+                            Kilau <span class="text-korean-accent">Kulit Korea</span>, Rahasia Kecantikan Abadi
+                        </h2>
+                        <p class="text-lg text-gray-600 mb-6">
+                            Temukan koleksi Skincare dan Makeup Korea terbaik. Mulai perjalanan Anda menuju kulit sehat
+                            dan bercahaya sekarang!
+                        </p>
+                        <button onclick="showProductsPage('Skincare')"
+                            class="bg-korean-accent text-white font-bold text-lg py-3 px-8 rounded-full hover:bg-pink-600 transition duration-300 shadow-xl shadow-korean-soft/50">
+                            Lihat Produk Skincare
+                        </button>
+                    </div>
+                    <div class="lg:w-1/2 mt-8 lg:mt-0 lg:pl-10">
+                        <img src="https://i.pinimg.com/736x/37/dd/57/37dd57a5a89e081f309764c72f421e62.jpg"
+                            alt="Korean Beauty Products" class="rounded-xl shadow-2xl">
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-3xl font-bold text-korean-text mb-6">Kategori Pilihan</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+                <div onclick="showProductsPage('Skincare')"
+                    class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer text-center border-b-4 border-red-300 hover:border-korean-accent">
+                    <div class="h-10 w-10 mx-auto mb-2">
+                        <img src="https://i.pinimg.com/1200x/36/63/d8/3663d87f13fe2278ce6d2687869cd1aa.jpg"
+                            alt="Ikon Skincare" class="w-full h-full object-contain">
+                    </div>
+                    <p class="font-bold text-korean-text">Skincare</p>
+                    <p class="text-sm text-gray-500">Perawatan Muka</p>
+                </div>
+
+                <div onclick="showProductsPage('Makeup')"
+                    class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer text-center border-b-4 border-red-300 hover:border-korean-accent">
+                    <div class="h-10 w-10 mx-auto mb-2">
+                        <img src="https://i.pinimg.com/736x/dd/8d/20/dd8d20a7b8bd6f6b2a20117f89ec4a33.jpg"
+                            alt="Ikon Makeup" class="w-full h-full object-contain">
+                    </div>
+                    <p class="font-bold text-korean-text">Makeup</p>
+                    <p class="text-sm text-gray-500">Riasan Wajah</p>
+                </div>
+
+                <div onclick="showProductsPage('Bodycare')"
+                    class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer text-center border-b-4 border-red-300 hover:border-korean-accent">
+                    <div class="h-10 w-10 mx-auto mb-2">
+                        <img src="https://i.pinimg.com/736x/39/ac/7b/39ac7be87ccef517d1d02beefe8e9cbb.jpg"
+                            alt="Ikon Bodycare" class="w-full h-full object-contain">
+                    </div>
+                    <p class="font-bold text-korean-text">Bodycare</p>
+                    <p class="text-sm text-gray-500">Perawatan Tubuh</p>
+                </div>
+
+                <div onclick="showProductsPage('Haircare')"
+                    class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer text-center border-b-4 border-red-300 hover:border-korean-accent">
+                    <div class="h-10 w-10 mx-auto mb-2">
+                        <img src="https://i.pinimg.com/1200x/89/70/ef/8970ef978c8459be7dc48c07b7894821.jpg"
+                            alt="Ikon Haircare" class="w-full h-full object-contain">
+                    </div>
+                    <p class="font-bold text-korean-text">Haircare</p>
+                    <p class="text-sm text-gray-500">Perawatan Rambut</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="product-list-page" class="hidden">
+            <h2 id="product-title" class="text-4xl font-extrabold text-korean-text mb-1">Semua Produk</h2>
+            <p id="product-subtitle" class="text-gray-500 mb-6">Total ${productsData.length} Item Kecantikan Korea
+                Terbaik</p>
+
+            <div class="flex flex-wrap gap-3 mb-8">
+                <button id="filter-semua" onclick="renderProducts('Semua')"
+                    class="category-tab bg-korean-accent text-white font-medium py-2 px-4 rounded-lg shadow-lg transition duration-200">Semua</button>
+                <button id="filter-skincare" onclick="renderProducts('Skincare')"
+                    class="category-tab bg-white text-gray-600 font-medium py-2 px-4 rounded-lg hover:bg-korean-soft transition duration-200">Skincare</button>
+                <button id="filter-makeup" onclick="renderProducts('Makeup')"
+                    class="category-tab bg-white text-gray-600 font-medium py-2 px-4 rounded-lg hover:bg-korean-soft transition duration-200">Makeup</button>
+                <button id="filter-bodycare" onclick="renderProducts('Bodycare')"
+                    class="category-tab bg-white text-gray-600 font-medium py-2 px-4 rounded-lg hover:bg-korean-soft transition duration-200">Bodycare</button>
+                <button id="filter-haircare" onclick="renderProducts('Haircare')"
+                    class="category-tab bg-white text-gray-600 font-medium py-2 px-4 rounded-lg hover:bg-korean-soft transition duration-200">Haircare</button>
+            </div>
+
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+        </section>
+
+        <section id="order-history-page" class="hidden">
+            <h2 class="text-4xl font-extrabold text-korean-text mb-2">Riwayat Pesanan</h2>
+            <p class="text-gray-500 mb-6">Daftar pesanan Anda yang tersimpan di Local Storage (hanya di browser ini).
+            </p>
+            <div id="order-history-container" class="space-y-4">
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t mt-10">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            &copy; 2025 CellBeauty. All rights reserved. | <span class="text-korean-accent font-semibold">Project Web
+                Programming.</span>
+        </div>
+    </footer>
+
+
+    <div id="cart-modal"
+        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 opacity-0 transition-opacity duration-300"
+        onclick="toggleCartModal(false)">
+        <div id="cart-panel"
+            class="fixed top-0 right-0 w-full md:w-96 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300"
+            onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-5 border-b sticky top-0 bg-white z-10">
+                <h3 class="text-xl font-bold text-korean-text">Keranjang Belanja</h3>
+                <button onclick="toggleCartModal(false)" class="text-gray-400 hover:text-korean-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="cart-items" class="p-5 overflow-y-auto" style="height: calc(100% - 160px);">
+            </div>
+
+            <div class="absolute bottom-0 w-full bg-white p-5 shadow-inner border-t">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-lg font-bold text-korean-text">Subtotal</span>
+                    <span id="cart-total" class="text-xl font-extrabold text-shopee-primary">Rp 0</span>
+                </div>
+                <button onclick="openCheckoutModal()"
+                    class="w-full bg-shopee-primary text-white font-bold py-3 rounded-lg hover:bg-red-600 transition duration-200">
+                    Lanjutkan ke Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal"
+        class="fixed inset-0 z-[60] hidden bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300">
+        <div
+            class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all duration-300">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-korean-accent">Checkout Pesanan</h3>
+                <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-korean-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 max-h-[80vh] overflow-y-auto">
+                <form id="checkout-form">
+                    <h4 class="text-lg font-semibold text-korean-text mb-3">Detail Pengiriman</h4>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label for="checkout-name" class="block text-sm font-medium text-gray-700">Nama
+                                Lengkap</label>
+                            <input type="text" id="checkout-name" required
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:border-korean-accent focus:ring focus:ring-korean-accent focus:ring-opacity-50">
+                        </div>
+                        <div>
+                            <label for="checkout-address" class="block text-sm font-medium text-gray-700">Alamat
+                                Lengkap</label>
+                            <textarea id="checkout-address" rows="3" required
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:border-korean-accent focus:ring focus:ring-korean-accent focus:ring-opacity-50"></textarea>
+                        </div>
+                    </div>
+
+                    <h4 class="text-lg font-semibold text-korean-text mb-3">Metode Pembayaran</h4>
+                    <div class="space-y-3 mb-6 bg-korean-soft/50 p-4 rounded-lg">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="payment-method" value="Transfer Bank BCA" required
+                                class="form-radio text-korean-accent h-4 w-4">
+                            <span class="text-gray-700">Transfer Bank (BCA)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="payment-method" value="Gopay"
+                                class="form-radio text-korean-accent h-4 w-4">
+                            <span class="text-gray-700">Gopay / Dana</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="payment-method" value="COD (Bayar di Tempat)"
+                                class="form-radio text-korean-accent h-4 w-4">
+                            <span class="text-gray-700">COD (Bayar di Tempat)</span>
+                        </label>
+                    </div>
+                </form>
+
+                <h4 class="text-lg font-semibold text-korean-text mb-3">Ringkasan Biaya</h4>
+                <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+                    <div class="space-y-1" id="checkout-summary-items">
+                    </div>
+
+                    <div class="flex justify-between text-sm pt-2 border-t">
+                        <span class="text-gray-700">Subtotal Produk</span>
+                        <span id="summary-subtotal" class="font-medium">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-700">Ongkos Kirim</span>
+                        <span id="summary-shipping-fee" class="font-medium text-gray-700">Rp 0</span>
+                    </div>
+
+                    <p id="free-shipping-note" class="text-xs text-center font-semibold text-yellow-600 italic mt-1">
+                    </p>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-dashed">
+                        <span class="text-xl font-bold text-korean-text">Total Akhir</span>
+                        <span id="summary-grand-total" class="text-2xl font-extrabold text-shopee-primary">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-gray-100 flex justify-end">
+                <button onclick="submitOrder()"
+                    class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-200 w-full">
+                    Konfirmasi Pesanan via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
